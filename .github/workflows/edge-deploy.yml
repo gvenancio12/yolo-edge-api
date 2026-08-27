@@ -182,6 +182,7 @@ jobs:
           host:     ${{ secrets.RPI_HOST }}
           username: ${{ secrets.RPI_USER }}
           key:      ${{ secrets.RPI_SSH_KEY }}
+          command_timeout: 30m
           script: |
             export DEPLOY_PATH=${{ secrets.RPI_DEPLOY_PATH }}
             cd $DEPLOY_PATH
