@@ -1,5 +1,6 @@
 services:
   yolo-api:
+    image: ${IMAGE:-ghcr.io/gvenancio12/yolo-edge-api/yolo-api:latest}
     build:
       context: .
       dockerfile: Dockerfile.api

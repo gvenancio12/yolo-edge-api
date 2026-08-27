@@ -1,6 +1,8 @@
 import base64
 import io
+import json
 import time
+import uuid
 from pathlib import Path
 from fastapi import FastAPI, HTTPException, Response
 from PIL import Image
@@ -19,6 +21,17 @@ app = FastAPI(
     description="API REST para inferência com YOLOv8 no Raspberry Pi 5",
     version="1.0.0",
 )
+
+# ── Logging Estruturado ──────────────────────────────────────
+def log_event(event: str, level: str = "INFO", **kwargs):
+    """Emite um evento estruturado em JSON para stdout."""
+    record = {
+        "timestamp": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+        "level":     level,
+        "event":     event,
+        **kwargs,
+    }
+    print(json.dumps(record, ensure_ascii=False), flush=True)
 
 # ── Métricas simples em memória ─────────────────────────────
 _metrics = {"total": 0, "success": 0, "total_ms": 0.0}
@@ -87,26 +100,56 @@ async def health_check():
 
 @app.post("/predict", response_model=PredictResponse)
 def predict(request: PredictRequest):
+    request_id = str(uuid.uuid4())[:8]
     _metrics["total"] += 1
+
+    log_event("predict_start",
+              request_id=request_id,
+              model=request.model_name,
+              confidence=request.confidence)
+
+    if not request.image_base64 and not request.image_url:
+        log_event("predict_error", level="WARN",
+                  request_id=request_id, reason="missing_input")
+        raise HTTPException(status_code=422,
+            detail="Forneça image_base64 ou image_url.")
     try:
-        img = _load_image_from_request(request)
+        if request.image_base64:
+            img = _decode_image(request.image_base64)
+        else:
+            resp = httpx.get(request.image_url, timeout=10)
+            resp.raise_for_status()
+            img = _decode_image(base64.b64encode(resp.content).decode())
+
         result = _run_inference(img, request.model_name, request.confidence)
         _metrics["success"] += 1
         _metrics["total_ms"] += result.inference_ms
+
+        log_event("predict_complete",
+                  request_id=request_id,
+                  model=result.model_used,
+                  detections=len(result.detections),
+                  inference_ms=result.inference_ms,
+                  image_size=f"{result.image_width}x{result.image_height}")
         return result
+
     except HTTPException:
         raise
     except FileNotFoundError as e:
+        log_event("predict_error", level="ERROR",
+                  request_id=request_id, reason=str(e))
         raise HTTPException(status_code=404, detail=str(e))
     except Exception as e:
+        log_event("predict_error", level="ERROR",
+                  request_id=request_id, reason=str(e))
         raise HTTPException(status_code=500, detail=str(e))
 
 @app.post("/predict/image", responses={200: {"content": {"image/jpeg": {}}}})
 def predict_image(request: PredictRequest):
     """Executa a inferência e retorna a imagem anotada em JPEG com cores 100% calibradas em RGB."""
+    request_id = str(uuid.uuid4())[:8]
     _metrics["total"] += 1
     try:
-        # 1. Carrega imagem em RGB
         img_rgb = _load_image_from_request(request)
         model = load_model(request.model_name)
         
@@ -117,10 +160,7 @@ def predict_image(request: PredictRequest):
         _metrics["success"] += 1
         _metrics["total_ms"] += elapsed_ms
 
-        # 2. plot() retorna o array RGB anotado
         annotated_array = results[0].plot()
-        
-        # 3. Salva diretamente via PIL (RGB nativo da web, sem conversão indevida do OpenCV)
         annotated_pil = Image.fromarray(annotated_array)
         buffer = io.BytesIO()
         annotated_pil.save(buffer, format="JPEG", quality=95)
@@ -151,4 +191,3 @@ async def get_metrics():
         successful_requests=_metrics["success"],
         avg_inference_ms=round(avg, 2),
     )
-
