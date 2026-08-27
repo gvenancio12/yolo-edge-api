@@ -3,18 +3,21 @@ import io
 import json
 import time
 import uuid
-from pathlib import Path
-from fastapi import FastAPI, HTTPException, Response
-from PIL import Image
-import numpy as np
-import httpx
 
+import httpx
+import numpy as np
+from fastapi import FastAPI, HTTPException, Response
+from model import get_default_model_name, load_model
+from PIL import Image
 from schemas import (
-    PredictRequest, PredictResponse,
-    BatchPredictRequest, BatchPredictResponse,
-    HealthResponse, MetricsResponse, Detection
+    BatchPredictRequest,
+    BatchPredictResponse,
+    Detection,
+    HealthResponse,
+    MetricsResponse,
+    PredictRequest,
+    PredictResponse,
 )
-from model import load_model, get_default_model_name
 
 app = FastAPI(
     title="YOLO Inference API",
@@ -149,6 +152,10 @@ def predict_image(request: PredictRequest):
     """Executa a inferência e retorna a imagem anotada em JPEG com cores 100% calibradas em RGB."""
     request_id = str(uuid.uuid4())[:8]
     _metrics["total"] += 1
+    log_event("predict_image_start",
+              request_id=request_id,
+              model=request.model_name,
+              confidence=request.confidence)
     try:
         img_rgb = _load_image_from_request(request)
         model = load_model(request.model_name)
@@ -164,13 +171,22 @@ def predict_image(request: PredictRequest):
         annotated_pil = Image.fromarray(annotated_array)
         buffer = io.BytesIO()
         annotated_pil.save(buffer, format="JPEG", quality=95)
+
+        log_event("predict_image_complete",
+                  request_id=request_id,
+                  model=request.model_name,
+                  inference_ms=round(elapsed_ms, 2))
         return Response(content=buffer.getvalue(), media_type="image/jpeg")
 
     except HTTPException:
         raise
     except FileNotFoundError as e:
+        log_event("predict_error", level="ERROR",
+                  request_id=request_id, reason=str(e))
         raise HTTPException(status_code=404, detail=str(e))
     except Exception as e:
+        log_event("predict_error", level="ERROR",
+                  request_id=request_id, reason=str(e))
         raise HTTPException(status_code=500, detail=str(e))
 
 @app.post("/predict/batch", response_model=BatchPredictResponse)
