@@ -184,9 +184,10 @@ jobs:
           key:      ${{ secrets.RPI_SSH_KEY }}
           command_timeout: 30m
           script: |
-            export DEPLOY_PATH=${{ secrets.RPI_DEPLOY_PATH }}
+            set -euo pipefail
+            export DEPLOY_PATH="${{ secrets.RPI_DEPLOY_PATH }}"
             cd $DEPLOY_PATH
-            git pull origin main
+            git pull --ff-only origin main
             bash scripts/deploy.sh
 
       - name: Notificar resultado
