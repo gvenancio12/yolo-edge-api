@@ -14,6 +14,28 @@ python3 scripts/capture_frames.py --count 180 --min-change 2
 O comando grava JPEGs e `capture_summary.json` em `~/epi-capture/raw`. Registre a
 saída final, que informa frames salvos e descartados.
 
+### Alternativa com fonte pública
+
+Se não houver EPI físico disponível, use o dataset público **Ultralytics
+Construction-PPE** com atribuição e licença AGPL-3.0. Esta alternativa deve ser
+descrita como **importação de dados públicos**, não como captura própria da câmera.
+
+```bash
+mkdir -p ~/epi-public-source && cd ~/epi-public-source
+curl -L -o construction-ppe.zip \
+  https://github.com/ultralytics/assets/releases/download/v0.0.0/construction-ppe.zip
+unzip construction-ppe.zip
+
+cd ~/yolo-edge-api
+python3 scripts/prepare_epi_dataset.py \
+  --source ~/epi-public-source/construction-ppe \
+  --target datasets/epi-v1 \
+  --count 500
+```
+
+O resultado possui 350 imagens de treino, 75 de validação e 75 de teste, com as
+classes da atividade. O arquivo `datasets/epi-v1/SOURCE.md` guarda a proveniência.
+
 ## 2. Roboflow
 
 1. Crie um projeto **Object Detection** chamado `epi`.
