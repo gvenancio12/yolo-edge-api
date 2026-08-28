@@ -28,7 +28,7 @@ unzip construction-ppe.zip
 
 cd ~/yolo-edge-api
 python3 scripts/prepare_epi_dataset.py \
-  --source ~/epi-public-source/construction-ppe \
+  --source ~/epi-public-source \
   --target datasets/epi-v1 \
   --count 500
 ```
