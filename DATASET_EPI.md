@@ -30,7 +30,7 @@ cd ~/yolo-edge-api
 python3 scripts/prepare_epi_dataset.py \
   --source ~/epi-ccby-source/construction-safety-yolov8 \
   --target datasets/epi-v1 \
-  --source-map 1:0,0:1,11:2 \
+  --source-map 6:0,15:1,11:2 \
   --source-name "Construction Safety (PS / Roboflow Universe)" \
   --source-url https://universe.roboflow.com/ps-3z4y0/construction-safety-r1got \
   --source-license "CC BY 4.0" \

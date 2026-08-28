@@ -57,11 +57,26 @@ def remap_labels(label_path: Path, source_class_map: dict[int, int]) -> list[str
     remapped: list[str] = []
     for line_number, raw_line in enumerate(label_path.read_text(encoding="utf-8").splitlines(), 1):
         values = raw_line.split()
-        if len(values) != 5:
+        if len(values) < 5:
             raise ValueError(f"{label_path}:{line_number} não é um rótulo YOLO válido.")
         source_class = int(values[0])
         if source_class in source_class_map:
-            remapped.append(" ".join([str(source_class_map[source_class]), *values[1:]]))
+            if len(values) == 5:
+                box = values[1:]
+            elif (len(values) - 1) % 2 == 0:
+                coordinates = [float(value) for value in values[1:]]
+                x_values, y_values = coordinates[::2], coordinates[1::2]
+                x_min, x_max = min(x_values), max(x_values)
+                y_min, y_max = min(y_values), max(y_values)
+                box = [
+                    str((x_min + x_max) / 2),
+                    str((y_min + y_max) / 2),
+                    str(x_max - x_min),
+                    str(y_max - y_min),
+                ]
+            else:
+                raise ValueError(f"{label_path}:{line_number} não é um rótulo YOLO válido.")
+            remapped.append(" ".join([str(source_class_map[source_class]), *box]))
     return remapped
 
 
@@ -77,8 +92,13 @@ def find_split_directories(source: Path, split: str) -> tuple[Path, Path]:
 
 def collect_candidates(source: Path, source_class_map: dict[int, int]) -> list[Candidate]:
     candidates: list[Candidate] = []
-    for split in ("train", "val", "test"):
-        images_dir, labels_dir = find_split_directories(source, split)
+    for split in ("train", "val", "valid", "test"):
+        try:
+            images_dir, labels_dir = find_split_directories(source, split)
+        except FileNotFoundError:
+            if split == "val":
+                continue
+            raise
         for image_path in images_dir.iterdir():
             if not image_path.is_file() or image_path.suffix.lower() not in IMAGE_EXTENSIONS:
                 continue
