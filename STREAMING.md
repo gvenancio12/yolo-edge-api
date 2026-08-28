@@ -44,10 +44,10 @@ scp guilherme@guilherme-raspberry:~/yolo-edge-evidencias/v3_optimized.avi .\evid
 ## Servidor MJPEG
 
 ```bash
-python3 -m streaming.mjpeg_server --port 8080
+python3 -m streaming.mjpeg_server --port 8081
 ```
 
-Abra `http://guilherme-raspberry:8080/` no navegador da rede Tailscale e registre a
+Abra `http://guilherme-raspberry:8081/` no navegador da rede Tailscale e registre a
 captura. O endpoint `/stream.mjpg` contém o MJPEG e `/snapshot.jpg` retorna uma
 imagem JPEG anotada para conferência. O endpoint da API exigido na aula permanece:
 

@@ -88,7 +88,7 @@ class MjpegHandler(BaseHTTPRequestHandler):
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--host", default="0.0.0.0")
-    parser.add_argument("--port", type=int, default=8080)
+    parser.add_argument("--port", type=int, default=8081)
     parser.add_argument("--api-url", default="http://127.0.0.1:8000/predict")
     parser.add_argument("--width", type=int, default=640)
     parser.add_argument("--height", type=int, default=480)
