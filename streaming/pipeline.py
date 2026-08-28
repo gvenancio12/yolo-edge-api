@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import base64
 import json
+import os
 import statistics
 import threading
 import time
@@ -18,6 +19,9 @@ import numpy as np
 
 DEFAULT_API_URL = "http://127.0.0.1:8000/predict"
 DEFAULT_SIZE = (640, 480)
+DEFAULT_EVIDENCE_DIR = Path(
+    os.getenv("EDGE_EVIDENCE_DIR", str(Path.home() / "yolo-edge-evidencias"))
+)
 
 
 class InferenceError(RuntimeError):

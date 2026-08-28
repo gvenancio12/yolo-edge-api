@@ -9,6 +9,7 @@ from pathlib import Path
 from streaming.pipeline import (
     ApiInferenceClient,
     Camera,
+    DEFAULT_EVIDENCE_DIR,
     FrameMetrics,
     StreamConfig,
     summarize,
@@ -20,7 +21,7 @@ def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--frames", type=int, default=50, help="Quantidade de frames.")
     parser.add_argument("--api-url", default="http://127.0.0.1:8000/predict")
-    parser.add_argument("--output-dir", type=Path, default=Path("output"))
+    parser.add_argument("--output-dir", type=Path, default=DEFAULT_EVIDENCE_DIR)
     parser.add_argument("--width", type=int, default=640)
     parser.add_argument("--height", type=int, default=480)
     parser.add_argument("--confidence", type=float, default=0.25)

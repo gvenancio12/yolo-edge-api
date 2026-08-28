@@ -7,13 +7,15 @@ from pathlib import Path
 
 import cv2
 
-from streaming.pipeline import LivePipeline, StreamConfig
+from streaming.pipeline import DEFAULT_EVIDENCE_DIR, LivePipeline, StreamConfig
 
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--frames", type=int, default=100, help="Frames a gravar no AVI.")
-    parser.add_argument("--output", type=Path, default=Path("output/v3_optimized.avi"))
+    parser.add_argument(
+        "--output", type=Path, default=DEFAULT_EVIDENCE_DIR / "v3_optimized.avi"
+    )
     parser.add_argument("--api-url", default="http://127.0.0.1:8000/predict")
     parser.add_argument("--width", type=int, default=640)
     parser.add_argument("--height", type=int, default=480)
