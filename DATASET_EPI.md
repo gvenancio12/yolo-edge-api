@@ -16,20 +16,24 @@ saída final, que informa frames salvos e descartados.
 
 ### Alternativa com fonte pública
 
-Se não houver EPI físico disponível, use o dataset público **Ultralytics
-Construction-PPE** com atribuição e licença AGPL-3.0. Esta alternativa deve ser
+Se não houver EPI físico disponível, use o dataset público **Construction Safety**
+do projeto PS no Roboflow Universe, sob licença CC BY 4.0. Esta alternativa deve ser
 descrita como **importação de dados públicos**, não como captura própria da câmera.
 
 ```bash
-mkdir -p ~/epi-public-source && cd ~/epi-public-source
-curl -L -o construction-ppe.zip \
-  https://github.com/ultralytics/assets/releases/download/v0.0.0/construction-ppe.zip
-unzip construction-ppe.zip
+mkdir -p ~/epi-ccby-source && cd ~/epi-ccby-source
+# Baixe a exportação YOLOv8 da versão 1 pela página abaixo:
+# https://universe.roboflow.com/ps-3z4y0/construction-safety-r1got/dataset/1
+unzip construction-safety-yolov8.zip -d construction-safety-yolov8
 
 cd ~/yolo-edge-api
 python3 scripts/prepare_epi_dataset.py \
-  --source ~/epi-public-source \
+  --source ~/epi-ccby-source/construction-safety-yolov8 \
   --target datasets/epi-v1 \
+  --source-map 1:0,0:1,11:2 \
+  --source-name "Construction Safety (PS / Roboflow Universe)" \
+  --source-url https://universe.roboflow.com/ps-3z4y0/construction-safety-r1got \
+  --source-license "CC BY 4.0" \
   --count 500
 ```
 
