@@ -14,32 +14,6 @@ python3 scripts/capture_frames.py --count 180 --min-change 2
 O comando grava JPEGs e `capture_summary.json` em `~/epi-capture/raw`. Registre a
 saída final, que informa frames salvos e descartados.
 
-### Alternativa com fonte pública
-
-Se não houver EPI físico disponível, use o dataset público **Construction Safety**
-do projeto PS no Roboflow Universe, sob licença CC BY 4.0. Esta alternativa deve ser
-descrita como **importação de dados públicos**, não como captura própria da câmera.
-
-```bash
-mkdir -p ~/epi-ccby-source && cd ~/epi-ccby-source
-# Baixe a exportação YOLOv8 da versão 1 pela página abaixo:
-# https://universe.roboflow.com/ps-3z4y0/construction-safety-r1got/dataset/1
-unzip construction-safety-yolov8.zip -d construction-safety-yolov8
-
-cd ~/yolo-edge-api
-python3 scripts/prepare_epi_dataset.py \
-  --source ~/epi-ccby-source/construction-safety-yolov8 \
-  --target datasets/epi-v1 \
-  --source-map 6:0,15:1,11:2 \
-  --source-name "Construction Safety (PS / Roboflow Universe)" \
-  --source-url https://universe.roboflow.com/ps-3z4y0/construction-safety-r1got \
-  --source-license "CC BY 4.0" \
-  --count 500
-```
-
-O resultado possui 350 imagens de treino, 75 de validação e 75 de teste, com as
-classes da atividade. O arquivo `datasets/epi-v1/SOURCE.md` guarda a proveniência.
-
 ## 2. Roboflow
 
 1. Crie um projeto **Object Detection** chamado `epi`.
