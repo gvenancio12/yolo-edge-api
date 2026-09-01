@@ -13,6 +13,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 # Copia codigo da aplicacao
 COPY app/ .
+COPY preprocessing/ ./preprocessing/
 
 EXPOSE 8000
 

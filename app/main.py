@@ -19,6 +19,8 @@ from schemas import (
     PredictResponse,
 )
 
+from preprocessing.preprocessor import CONFIG_DEFAULT, Preprocessor
+
 app = FastAPI(
     title="YOLO Inference API",
     description="API REST para inferência com YOLOv8 no Raspberry Pi 5",
@@ -38,6 +40,7 @@ def log_event(event: str, level: str = "INFO", **kwargs):
 
 # ── Métricas simples em memória ─────────────────────────────
 _metrics = {"total": 0, "success": 0, "total_ms": 0.0}
+_preprocessor = Preprocessor(CONFIG_DEFAULT)
 
 def _decode_image(image_base64: str) -> np.ndarray:
     """Converte base64 → numpy array RGB."""
@@ -63,14 +66,18 @@ def _load_image_from_request(request: PredictRequest) -> np.ndarray:
 
 def _run_inference(image_np: np.ndarray, model_name: str, confidence: float) -> PredictResponse:
     model = load_model(model_name)
+    # A decodificação da API entrega RGB; o módulo recebe BGR do OpenCV.
+    preprocessed = _preprocessor.process(image_np[:, :, ::-1])
     t0 = time.perf_counter()
-    results = model(image_np, conf=confidence, verbose=False)
+    results = model(preprocessed.frame, conf=confidence, verbose=False)
     elapsed_ms = (time.perf_counter() - t0) * 1000
 
     detections = []
     for r in results:
         for box in r.boxes:
-            coords = box.xyxy[0].tolist()
+            coords = _preprocessor.adjust_boxes(
+                box.xyxy[0].cpu().numpy().reshape(1, 4), preprocessed
+            )[0]
             cls_id = int(box.cls[0].item())
             conf_val = float(box.conf[0].item())
             
