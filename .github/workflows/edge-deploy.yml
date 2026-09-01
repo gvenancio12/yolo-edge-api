@@ -44,7 +44,7 @@ jobs:
 
       - name: Download modelo para testes
         run: |
-          pip install "dvc[ssh]"
+          pip install "dvc[ssh]" "pygtrie<2.6"
           mkdir -p ~/.ssh
           printf "Host *\n  StrictHostKeyChecking no\n  UserKnownHostsFile /dev/null\n" > ~/.ssh/config
           echo "${{ secrets.RPI_SSH_KEY }}" | tr -d '\r' > ~/.ssh/dvc_key
@@ -142,7 +142,7 @@ jobs:
           cache: pip
 
       - name: Instalar dependências
-        run: pip install ultralytics "dvc[ssh]"
+        run: pip install ultralytics "dvc[ssh]" "pygtrie<2.6"
 
       - name: Recuperar modelo via DVC
         run: |
