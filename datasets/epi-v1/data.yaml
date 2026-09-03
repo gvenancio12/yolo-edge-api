@@ -1,0 +1,13 @@
+train: train/images
+val: valid/images
+test: test/images
+
+nc: 3
+names: ['capacete', 'colete', 'pessoa']
+
+roboflow:
+  workspace: guilherme-venancio
+  project: epi-detection-rpi5-6q1f3-gk9hv
+  version: 1
+  license: CC BY 4.0
+  url: https://universe.roboflow.com/guilherme-venancio/epi-detection-rpi5-6q1f3-gk9hv/dataset/1
