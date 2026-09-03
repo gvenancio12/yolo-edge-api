@@ -20,8 +20,8 @@ saída final, que informa frames salvos e descartados.
 2. Crie exatamente as classes: `capacete`, `colete` e `pessoa`.
 3. Envie os frames de `~/epi-capture/raw`, anote todas as instâncias e revise os
    rótulos antes de gerar a versão.
-4. Gere a versão 1 com split **70% train / 15% valid / 15% test**. Aplique
-   augmentations até a tela de prévia indicar pelo menos **350 imagens em train**.
+4. Gere a versão 1 com split **70% train / 15% valid / 15% test**. Nesta entrega,
+   a exigência de quantidade mínima de imagens foi dispensada pelo professor.
 5. Exporte a versão no formato **YOLOv8** para `datasets/epi-v1` no repositório.
 
 Registre as telas do projeto anotado e da versão 1 na pasta local
@@ -42,5 +42,5 @@ git push origin main
 ```
 
 O inspetor exige os três splits, classes exatamente nomeadas, rótulos YOLO válidos,
-proporção 70/15/15 (tolerância de 3 pontos percentuais), no mínimo 350 imagens de
-treino e anotações das três classes.
+proporção 70/15/15 (tolerância de 3 pontos percentuais) e anotações das três classes.
+Use `--min-train N` somente quando houver quantidade mínima obrigatória.

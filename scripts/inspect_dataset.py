@@ -31,7 +31,12 @@ class SplitReport:
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--dataset", type=Path, required=True)
-    parser.add_argument("--min-train", type=int, default=350)
+    parser.add_argument(
+        "--min-train",
+        type=int,
+        default=0,
+        help="Mínimo de imagens de treino; use 0 para não exigir mínimo.",
+    )
     parser.add_argument("--split-tolerance", type=float, default=0.03)
     parser.add_argument("--report", type=Path, default=None)
     return parser.parse_args()
@@ -82,6 +87,8 @@ def normalize_names(raw_names: Any) -> list[str]:
 def main() -> None:
     args = parse_args()
     dataset = args.dataset.resolve()
+    if args.min_train < 0:
+        raise SystemExit("--min-train não pode ser negativo.")
     errors: list[str] = []
     reports: dict[str, SplitReport] = {}
     class_counts: Counter[int] = Counter()
@@ -121,7 +128,7 @@ def main() -> None:
             validate_label(label_path, len(names), errors, class_counts)
 
     total_images = sum(report.images for report in reports.values())
-    if reports["train"].images < args.min_train:
+    if args.min_train and reports["train"].images < args.min_train:
         errors.append(
             f"train possui {reports['train'].images}; mínimo exigido={args.min_train}."
         )
