@@ -1,0 +1,36 @@
+{
+  "approved": true,
+  "dataset": "/home/guilherme/yolo-edge-api/datasets/epi-v1",
+  "classes": [
+    "capacete",
+    "colete",
+    "pessoa"
+  ],
+  "splits": {
+    "train": {
+      "images": 95,
+      "labels": 95,
+      "missing_labels": [],
+      "orphan_labels": []
+    },
+    "valid": {
+      "images": 20,
+      "labels": 20,
+      "missing_labels": [],
+      "orphan_labels": []
+    },
+    "test": {
+      "images": 20,
+      "labels": 20,
+      "missing_labels": [],
+      "orphan_labels": []
+    }
+  },
+  "total_images": 135,
+  "class_annotations": {
+    "capacete": 253,
+    "colete": 171,
+    "pessoa": 287
+  },
+  "errors": []
+}
