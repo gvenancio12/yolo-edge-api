@@ -1,0 +1,20 @@
+{
+  "dataset": "datasets/epi-v1",
+  "model_endpoint": "https://serverless.roboflow.com/epi-detection-rpi5-6q1f3-gk9hv/1",
+  "split": "valid",
+  "classes": ["capacete", "colete", "pessoa"],
+  "baseline": "E1-A",
+  "results": [
+    {"experiment": "E1-A", "configuration": "BGR sem conversão", "map50": 0.281763, "delta_vs_baseline": 0.0, "images": 20},
+    {"experiment": "E1-B", "configuration": "RGB correto", "map50": 0.409766, "delta_vs_baseline": 0.128003, "images": 20},
+    {"experiment": "E2-A", "configuration": "resize simples 320x320", "map50": 0.403421, "delta_vs_baseline": 0.121658, "images": 20},
+    {"experiment": "E2-B", "configuration": "letterbox 320, padding 114", "map50": 0.403421, "delta_vs_baseline": 0.121658, "images": 20},
+    {"experiment": "E3-A", "configuration": "sem filtro", "map50": 0.409766, "delta_vs_baseline": 0.128003, "images": 20},
+    {"experiment": "E3-B", "configuration": "GaussianBlur 3x3, sigma=0.8", "map50": 0.402248, "delta_vs_baseline": 0.120485, "images": 20},
+    {"experiment": "E3-C", "configuration": "GaussianBlur 5x5, sigma=1.5", "map50": 0.395002, "delta_vs_baseline": 0.113239, "images": 20},
+    {"experiment": "E3-D", "configuration": "medianBlur kernel=3", "map50": 0.401520, "delta_vs_baseline": 0.119757, "images": 20},
+    {"experiment": "E4-A", "configuration": "escurecida, sem equalização", "map50": 0.372096, "delta_vs_baseline": 0.090334, "images": 20},
+    {"experiment": "E4-B", "configuration": "escurecida, equalizeHist global", "map50": 0.321359, "delta_vs_baseline": 0.039596, "images": 20},
+    {"experiment": "E4-C", "configuration": "escurecida, CLAHE clip=2 tile=8", "map50": 0.387546, "delta_vs_baseline": 0.105783, "images": 20}
+  ]
+}
